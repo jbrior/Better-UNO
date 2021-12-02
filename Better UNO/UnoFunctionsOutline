@@ -1,0 +1,40 @@
+- start game
+    - give players starting 7 cards
+    - remove starting cards from deck
+    - update labels
+    - set current player to player 1
+- player draws
+    - add random card from deck to players hand and remove card from deck
+    - update players labels
+    - switch current player
+
+*********^IMPLEMENTED^*********
+
+- player puts card down
+    - players card cannot be put down
+        - notify player that card cannot be put down
+    - players card can be put down
+        - take card out of players hand
+        - make that card top card on pile
+        - if that was players last card
+            - display winner and end game
+        - if that was not players last card
+            - update label with num of cards left in hand
+            - card is a special
+                - card is a wild
+                    - current player picks new color
+                        - switch current player
+                - card is a draw4
+                    - current player picks new color
+                    - add 4 new cards to opponents hand and remove them from deck
+                    - switch current player
+                - card is a skip
+                    - switch current player to current player
+                - card is a reverse
+                    - switch current player to current player
+                - card is a draw2
+                    - add 2 new cards to opponents hand and remove them from deck
+                    - switch current player
+            - card is not a special card
+                - switch current player
+
