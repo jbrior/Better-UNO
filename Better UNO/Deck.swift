@@ -8,7 +8,6 @@
 import Foundation
 
 struct Deck {
-    let badStartingCards: [String] = ["wild-1", "wild-2", "wild-3", "wild-4", "drawFour-1", "drawFour-2", "drawFour-3", "drawFour-4"]
     let defaultDeck: [String:[String]] = [
         "RedCards": [
             "red-0-1",

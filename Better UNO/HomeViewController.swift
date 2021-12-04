@@ -16,19 +16,18 @@ class HomeViewController: UIViewController {
     @IBOutlet var topPileCard: UILabel!
     
     var deck = Array(Deck().defaultDeck.values)
-    let badStartingCards = Deck().badStartingCards
+    let miscCards = Deck().defaultDeck["MiscCards"]!
     var hands = [[String]]()
-    // this version currently supports 2 players
+    // **** this version currently supports 2 players ****
     var currentPlayer = 1 // either 1 or 2
     var currentCardOnPile = String()
+    var pickedCard = String()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         giveOutStartingHands()
         updatePlayerHands()
-        
         topPileCard.text = currentCardOnPile
-        
         handTwoLbl.isHidden = true
         playerTwoLbl.isHidden = true
     }
@@ -59,7 +58,7 @@ class HomeViewController: UIViewController {
             let r1 = Int.random(in: 0..<deck.count)
             let r2 = Int.random(in: 0..<deck[r1].count)
             card = deck[r1][r2]
-            if !badStartingCards.contains(card) {
+            if !miscCards.contains(card) {
                 currentCardOnPile = card
                 removeCardFromDeck(r1, r2)
                 break
@@ -76,7 +75,6 @@ class HomeViewController: UIViewController {
         let r2 = Int.random(in: 0..<deck[r1].count)
         let card = deck[r1][r2]
         removeCardFromDeck(r1, r2)
-        print(countCardsInDeck())
         return card
     }
     
@@ -92,7 +90,24 @@ class HomeViewController: UIViewController {
     }
     
     private func playerPlaysCard() {
-        // update current card on top of pile
+        let toMatchTo = String(Array(currentCardOnPile)[0])
+        let pickedIndex = Int(pickedCard)! - 1
+        var isSpecialCard = false
+        let t = String(Array(hands[currentPlayer-1][pickedIndex])[0])
+        
+        if miscCards.contains(hands[currentPlayer-1][pickedIndex]) {
+            isSpecialCard = true
+            print("special card")
+            return
+        }
+        print("test")
+        if t == toMatchTo && !isSpecialCard {
+            // not special card but can be played
+            print("playbale card")
+        } else {
+            // not a playable card
+            print("not playable")
+        }
     }
     
     private func updatePlayerHands() {
@@ -130,6 +145,38 @@ class HomeViewController: UIViewController {
             text += "\(hands[1][i]) : "
         }
         handTwoLbl.text = String(text.dropLast(3))
+    }
+    
+    @IBAction private func pickCardToPutDownAlert() {
+        var textField = UITextField()
+        let alert = UIAlertController(title: "Pick Card to Play", message: "type index number of the card you wish to play.", preferredStyle: .alert)
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "Enter number"
+            alertTextField.textAlignment = .center
+            alertTextField.keyboardType = .numberPad
+            textField = alertTextField
+        }
+        let confirmAction = UIAlertAction(title: "Confirm", style: .default) { action in
+            
+            self.pickedCard = textField.text!
+            let maxAllowedNum = self.hands[self.currentPlayer-1].count
+            
+            if Int(self.pickedCard)! < 1 || Int(self.pickedCard)! > maxAllowedNum {
+                let alert = UIAlertController(title: "Error", message: "Please enter a valid number.", preferredStyle: .alert)
+                let action = UIAlertAction(title: "Ok", style: .cancel) { action in
+                    self.pickCardToPutDownAlert()
+                }
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                self.playerPlaysCard()
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alert.addAction(confirmAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
     }
     
 // MARK: *****FOR TESTING*****
